@@ -192,6 +192,9 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
 .prose table { width: 100%; border-collapse: collapse; margin: 30px 0; font-size: 15px; }
 .prose th, .prose td { text-align: left; padding: 12px; border: 1px solid var(--line); }
 .prose th { background: var(--paper-deep); }
+.prose .table-scroll { overflow-x: auto; margin: 30px 0; }
+.prose .table-scroll table { margin: 0; min-width: 460px; }
+.table-scroll:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
 .template-intro { display: flex; justify-content: space-between; align-items: center; gap: 35px; padding-top: 34px; }
 .template-callout { display: flex; gap: 22px; max-width: 850px; }
 .template-callout-icon { display: grid; flex: 0 0 40px; width: 40px; height: 40px; place-items: center; border-radius: 50%; background: var(--accent); color: var(--accent-foreground); font-size: 20px; }
@@ -223,6 +226,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
 .article-deck { max-width: 780px; color: var(--ink-muted); font-family: Georgia, serif; font-size: clamp(24px, 3vw, 34px); line-height: 1.3; letter-spacing: -.03em; }
 .article-meta { display: flex; gap: 12px; color: var(--ink-muted); margin-top: 32px; text-transform: uppercase; }
 .article-body-wrap { display: grid; grid-template-columns: minmax(0, 800px) minmax(180px, 1fr); gap: 95px; padding-top: 80px; }
+.article-body { min-width: 0; }
 .article-aside { font-size: 14px; line-height: 1.6; color: var(--ink-muted); }
 .aside-rule { display: block; width: 60px; height: 1px; background: var(--accent); margin-bottom: 22px; }
 .article-aside .eyebrow { color: var(--accent); }

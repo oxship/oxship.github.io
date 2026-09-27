@@ -10,7 +10,7 @@ layout: default
     <span>By {{ page.author | default: site.author | escape }}</span>
     <span aria-hidden="true">·</span>
     <time datetime="{{ page.date | date: '%Y-%m-%d' }}">{{ page.date | date: '%B %-d, %Y' }}</time>
-    {% if page.severity %}<span aria-hidden="true">·</span><span>{{ page.severity | escape }} severity</span>{% endif %}
+    {% if page.severity %}<span aria-hidden="true">·</span><span>{{ page.severity | escape }}{% if page.severity_label %} — {{ page.severity_label | escape }}{% else %} severity{% endif %}</span>{% endif %}
   </div>
 </div>
 <div class="article-body-wrap container">

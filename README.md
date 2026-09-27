@@ -19,9 +19,10 @@ If Ruby is available, install the `github-pages` gem and run `jekyll serve` in t
 
 - `index.html`: home page
 - `writeups.html`: archive
+- `_posts/`: published case studies
 - `template.md`: public guide to the writeup format
 - `_drafts/writeup-template.md`: unpublished Markdown starter
 - `_layouts/`: page and post layouts
 - `assets/`: styles, theme script, and favicon
 
-The site contains no real vulnerability details until an approved post is added.
+Published case studies appear automatically on the home page and in the writeup archive.

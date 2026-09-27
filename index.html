@@ -10,7 +10,7 @@ description: "Security writeups by oxship: careful reproduction, clear impact, a
     <div class="hero-main"><p class="eyebrow"><span class="eyebrow-line"></span> AN OPEN RECORD OF SECURITY RESEARCH</p><h1><span>Observe<span class="hero-stop">.</span></span><span class="hero-offset">Verify<span class="hero-stop">.</span></span><span class="hero-last"><em>Document.</em></span></h1><div class="hero-summary"><span class="summary-arrow" aria-hidden="true">↳</span><p>Bug bounty writeups built from evidence, honest limits, and a clear path from finding to fix.</p><a href="{{ '/writeups/' | relative_url }}">ENTER THE ARCHIVE <span aria-hidden="true">↗</span></a></div></div>
     <div class="hero-stamp" aria-hidden="true"><span class="stamp-ring"><span>OX<br>✳</span></span><span class="stamp-caption">DETAILS<br>ARE THE<br>STORY.</span></div>
   </div>
-  <div class="hero-bottom"><span>PUBLICATION STATUS <strong>AWAITING FIRST DISCLOSURE</strong></span><span>EST. 2026 <span aria-hidden="true">↓</span></span></div>
+  <div class="hero-bottom"><span>PUBLICATION STATUS <strong>{% if site.posts.size > 0 %}{{ site.posts.size }} {% if site.posts.size == 1 %}WRITEUP{% else %}WRITEUPS{% endif %} PUBLISHED{% else %}AWAITING FIRST DISCLOSURE{% endif %}</strong></span><span>EST. 2026 <span aria-hidden="true">↓</span></span></div>
 </section>
 
 <section class="section section-writeups" id="latest"><div class="container"><div class="section-heading"><div><p class="eyebrow">A / THE ARCHIVE</p><h2>Published work<span class="heading-period">.</span></h2></div><span class="section-heading-side">RECORDS / {{ site.posts.size | prepend: '0' }}<br>ORDER / NEWEST FIRST</span></div>
