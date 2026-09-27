@@ -10,7 +10,7 @@ tags: [sql-injection, soap, disclosure, asset-lifecycle]
 published: true
 ---
 
-On May 19, 2026, I reported an unauthenticated SQL injection in an externally reachable SOAP integration. Four months later, the main-program report closed with an **Exceptional (10.0)** rating and a **€5,000 total bounty**, shared with my collaborator, almirkrass.
+On May 19, 2026, I reported an unauthenticated SQL injection in an externally reachable SOAP integration. Four months later, the main-program report closed with an **Exceptional (10.0)** rating and a **€5,000 total bounty**, shared with a collaborator.
 
 The final remediation was to turn off the server. The company explained that it was no longer used.
 
@@ -25,7 +25,7 @@ Between discovery and resolution, the report moved between programs, a request a
 | Vulnerability | Unauthenticated SQL injection in SOAP integration services |
 | Database technology | Microsoft SQL Server |
 | First report | May 19, 2026 |
-| Main-program submission | June 3, 2026, in collaboration with almirkrass |
+| Main-program submission | June 3, 2026, as a collaborative submission |
 | Final program rating | Exceptional, 10.0 |
 | Total bounty | €5,000 across both collaborators |
 | Resolution | September 24, 2026; server switched off, according to the company |
@@ -37,6 +37,13 @@ Between discovery and resolution, the report moved between programs, a request a
 I started with a hostname search in **Shodan**, scoped to the company's domain. That led me to an indexed IP address associated with the organization.
 
 From there, I used **shortscan** for IIS short-name enumeration. I followed that with **ffuf** and the **`iis.txt` wordlist**, looking for paths that shared a service-name prefix. This narrowed the search to the integration services that became the focus of the report.
+
+<figure class="article-figure">
+  <a href="{{ '/assets/images/writeups/soap-sql-injection/shortscan-anonymized.png' | relative_url }}" target="_blank" rel="noopener noreferrer" aria-label="Open the anonymized shortscan screenshot at full size">
+    <img src="{{ '/assets/images/writeups/soap-sql-injection/shortscan-anonymized.png' | relative_url }}" width="1672" height="941" loading="lazy" decoding="async" alt="Anonymized shortscan output showing IIS short-name enumeration, with the target IP redacted and organization-specific prefixes replaced.">
+  </a>
+  <figcaption>Shortscan discovery screenshot, anonymized for publication. The IP is redacted, and COMPANY-prefixed entries are substituted labels rather than literal short names. Select the image to view it at full size.</figcaption>
+</figure>
 
 The discovery sequence was:
 
@@ -92,7 +99,7 @@ That created a routing question. The service lived on a separate subdomain, but 
 
 On June 3, triage instructed us to resubmit. The first report was closed as **Informative** as part of that move, and later archived. That status belonged to the original submission; the main-program report continued through review.
 
-I had reached the submission limit at the time. Almirkrass created the main-program submission and added me as a collaborator.
+I had reached the submission limit at the time. A collaborator created the main-program submission and added me as a collaborator.
 
 ## A second operation kept the investigation open
 
@@ -132,7 +139,7 @@ The outcome highlighted a service-lifecycle problem: a server could be unnecessa
 | --- | --- |
 | May 19, 2026 | Original report submitted; triage reproduced it the same day. |
 | May 20 | The company identified the program-routing issue; I explained the link to my main-site test account. |
-| June 3 | Triage requested resubmission. Almirkrass opened the collaborative main-program report, and I supplied further evidence. |
+| June 3 | Triage requested resubmission. A collaborator opened the collaborative main-program report, and I supplied further evidence. |
 | June 4 | Triage confirmed reproduction; the program record listed Exceptional, 10.0. |
 | June 18 | The original Informative report was archived; the main report remained under review. |
 | September 22 | Product-operation retest evidence showed the issue was still observable. |
@@ -153,4 +160,4 @@ For an integration that needs to remain in service, the database defense is to b
 
 For this server, the company chose retirement. Keeping an accurate inventory of exposed integrations—and removing them when they are no longer needed—was the operational lesson behind the final resolution.
 
-Thanks to **almirkrass** for collaborating on the main-program submission, and to the triage team and the company for working through the report and resolving the exposure.
+Thanks to my collaborator for helping on the main-program submission, and to the triage team and the company for working through the report and resolving the exposure.
