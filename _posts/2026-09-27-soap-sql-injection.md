@@ -36,13 +36,22 @@ Between discovery and resolution, the report moved between programs, a request a
 
 I started with a hostname search in **Shodan**, scoped to the company's domain. That led me to an indexed IP address associated with the organization.
 
-From there, I used **shortscan** for IIS short-name enumeration. I followed that with **ffuf** and the **`iis.txt` wordlist**, looking for paths that shared a service-name prefix. This narrowed the search to the integration services that became the focus of the report.
+From there, I used **shortscan** for IIS short-name enumeration.
 
 <figure class="article-figure">
   <a href="{{ '/assets/images/writeups/soap-sql-injection/shortscan-anonymized.png' | relative_url }}" target="_blank" rel="noopener noreferrer" aria-label="Open the anonymized shortscan screenshot at full size">
     <img src="{{ '/assets/images/writeups/soap-sql-injection/shortscan-anonymized.png' | relative_url }}" width="1672" height="941" loading="lazy" decoding="async" alt="Anonymized shortscan output showing IIS short-name enumeration, with the target IP redacted and organization-specific prefixes replaced.">
   </a>
   <figcaption>Shortscan discovery screenshot, anonymized for publication. The IP is redacted, and COMPANY-prefixed entries are substituted labels rather than literal short names. Select the image to view it at full size.</figcaption>
+</figure>
+
+I followed that with **ffuf** and the **`iis.txt` wordlist**, looking for paths that shared a service-name prefix. This narrowed the search to the integration services that became the focus of the report.
+
+<figure class="article-figure">
+  <a href="{{ '/assets/images/writeups/soap-sql-injection/ffuf-anonymized.png' | relative_url }}" target="_blank" rel="noopener noreferrer" aria-label="Open the anonymized ffuf screenshot at full size">
+    <img src="{{ '/assets/images/writeups/soap-sql-injection/ffuf-anonymized.png' | relative_url }}" width="1579" height="996" loading="lazy" decoding="async" alt="Anonymized ffuf path-discovery output showing candidate paths returning redirects, with the IP redacted and the URL prefix replaced with COMPANY.">
+  </a>
+  <figcaption>ffuf path-discovery screenshot, anonymized for publication. The IP is redacted and the organization-specific URL prefix is replaced with COMPANY. Several candidates returned redirects; these results guided further service review. Select the image to view it at full size.</figcaption>
 </figure>
 
 The discovery sequence was:
