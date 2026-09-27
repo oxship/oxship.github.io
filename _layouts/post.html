@@ -1,0 +1,25 @@
+---
+layout: default
+---
+<div class="article-top container">
+  <a class="back-link" href="{{ '/writeups/' | relative_url }}">← All writeups</a>
+  <div class="article-label"><span class="status-dot"></span> SECURITY WRITEUP</div>
+  <h1>{{ page.title | escape }}</h1>
+  {% if page.description %}<p class="article-deck">{{ page.description | escape }}</p>{% endif %}
+  <div class="article-meta">
+    <span>By {{ page.author | default: site.author | escape }}</span>
+    <span aria-hidden="true">·</span>
+    <time datetime="{{ page.date | date: '%Y-%m-%d' }}">{{ page.date | date: '%B %-d, %Y' }}</time>
+    {% if page.severity %}<span aria-hidden="true">·</span><span>{{ page.severity | escape }} severity</span>{% endif %}
+  </div>
+</div>
+<div class="article-body-wrap container">
+  <article class="prose article-body">{{ content }}</article>
+  <aside class="article-aside">
+    <span class="aside-rule"></span>
+    <p class="eyebrow">RESEARCH NOTES</p>
+    <p>Only findings cleared for public disclosure belong on this site.</p>
+    <a href="{{ '/template/' | relative_url }}">See the writeup template ↗</a>
+  </aside>
+</div>
+<div class="container article-end"><a href="{{ '/writeups/' | relative_url }}">← Back to writeups</a></div>

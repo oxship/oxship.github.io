@@ -1,0 +1,18 @@
+title: "oxship / security writeups"
+description: "Clear, reproducible security research notes and responsible disclosure writeups."
+url: "https://oxship.github.io"
+baseurl: ""
+author: "oxship"
+permalink: /writeups/:title/
+timezone: Africa/Casablanca
+markdown: kramdown
+highlighter: rouge
+defaults:
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: post
+exclude:
+  - README.md
+  - LICENSE

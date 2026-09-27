@@ -1,0 +1,26 @@
+---
+layout: default
+title: Home
+description: "Security writeups by oxship: careful reproduction, clear impact, and responsible disclosure."
+---
+<section class="hero container">
+  <div class="hero-topline"><span>FIELD JOURNAL <b>№ 001</b></span><span>SECURITY RESEARCH / PUBLIC NOTES</span></div>
+  <div class="hero-composition">
+    <div class="hero-index"><span class="hero-index-number">01</span><span class="hero-index-caption">OXSHIP<br>ARCHIVE</span><span class="hero-index-rule"></span><span class="hero-index-vertical">RESEARCH, THEN WRITE</span></div>
+    <div class="hero-main"><p class="eyebrow"><span class="eyebrow-line"></span> AN OPEN RECORD OF SECURITY RESEARCH</p><h1><span>Observe<span class="hero-stop">.</span></span><span class="hero-offset">Verify<span class="hero-stop">.</span></span><span class="hero-last"><em>Document.</em></span></h1><div class="hero-summary"><span class="summary-arrow" aria-hidden="true">↳</span><p>Bug bounty writeups built from evidence, honest limits, and a clear path from finding to fix.</p><a href="{{ '/writeups/' | relative_url }}">ENTER THE ARCHIVE <span aria-hidden="true">↗</span></a></div></div>
+    <div class="hero-stamp" aria-hidden="true"><span class="stamp-ring"><span>OX<br>✳</span></span><span class="stamp-caption">DETAILS<br>ARE THE<br>STORY.</span></div>
+  </div>
+  <div class="hero-bottom"><span>PUBLICATION STATUS <strong>AWAITING FIRST DISCLOSURE</strong></span><span>EST. 2026 <span aria-hidden="true">↓</span></span></div>
+</section>
+
+<section class="section section-writeups" id="latest"><div class="container"><div class="section-heading"><div><p class="eyebrow">A / THE ARCHIVE</p><h2>Published work<span class="heading-period">.</span></h2></div><span class="section-heading-side">RECORDS / {{ site.posts.size | prepend: '0' }}<br>ORDER / NEWEST FIRST</span></div>
+{% if site.posts.size > 0 %}
+<div class="archive-list home-archive">{% for post in site.posts limit:4 %}<a class="archive-item" href="{{ post.url | relative_url }}"><span class="archive-date">{{ post.date | date: '%Y / %m / %d' }}</span><span class="archive-title">{{ post.title | escape }}<small>{{ post.description | default: post.excerpt | strip_html | truncate: 160 | escape }}</small></span><span class="archive-arrow" aria-hidden="true">↗</span></a>{% endfor %}</div><a class="archive-all" href="{{ '/writeups/' | relative_url }}">VIEW ALL WRITEUPS <span aria-hidden="true">↗</span></a>
+{% else %}
+<div class="ledger-empty"><div class="ledger-empty-index">00<span>—</span>00</div><div class="ledger-empty-content"><span class="eyebrow">NO PUBLIC CASES FILED</span><h3>The first page stays blank until a finding is ready.</h3><p>Responsible disclosure comes before publication. In the meantime, the framework for each future case is open to read.</p><a href="{{ '/template/' | relative_url }}">READ THE WRITEUP TEMPLATE <span aria-hidden="true">↗</span></a></div><div class="ledger-empty-mark" aria-hidden="true">✳</div></div>
+{% endif %}
+</div></section>
+
+<section class="principles-section"><div class="container principles-inner"><div class="principles-intro"><p class="eyebrow">B / THE METHOD</p><h2>A trail someone<br>else can follow.</h2><p>Every writeup should answer four questions: what happened, how it was verified, why it matters, and what changed.</p></div><div class="principles-list"><div class="principle"><span>01 /</span><div><h3>Show the evidence.</h3><p>Reproduction steps, relevant requests, and controlled results.</p></div><span aria-hidden="true">↗</span></div><div class="principle"><span>02 /</span><div><h3>Name the boundary.</h3><p>The permission or trust decision that failed.</p></div><span aria-hidden="true">↗</span></div><div class="principle"><span>03 /</span><div><h3>State the limits.</h3><p>Impact that the test actually supports, with uncertainty made visible.</p></div><span aria-hidden="true">↗</span></div><div class="principle"><span>04 /</span><div><h3>Close the loop.</h3><p>Fix status, disclosure dates, and a lesson worth keeping.</p></div><span aria-hidden="true">↗</span></div></div></div></section>
+
+<section class="closing-cta"><div class="container closing-inner"><span class="eyebrow">C / THE STARTING POINT</span><h2>Start with a<br><em>better question.</em></h2><div class="closing-bottom"><p>How do you explain a finding so the next person can verify it?</p><a href="{{ '/template/' | relative_url }}">EXPLORE THE TEMPLATE <span aria-hidden="true">↗</span></a></div></div></section>

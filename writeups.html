@@ -1,0 +1,15 @@
+---
+layout: default
+title: Writeups
+description: Public security research writeups from oxship.
+permalink: /writeups/
+---
+<section class="page-hero container"><p class="eyebrow"><span class="eyebrow-line"></span> THE ARCHIVE</p><h1>Writeups<span class="heading-period">.</span></h1><p>Verified findings, documented with a clear path from observation to impact.</p></section>
+<section class="archive-section container">
+  {% if site.posts.size > 0 %}
+  <div class="archive-count"><span>{{ site.posts.size }} {% if site.posts.size == 1 %}ENTRY{% else %}ENTRIES{% endif %}</span><span>NEWEST FIRST</span></div>
+  <div class="archive-list">{% for post in site.posts %}<a class="archive-item" href="{{ post.url | relative_url }}"><span class="archive-date">{{ post.date | date: '%Y / %m / %d' }}</span><span class="archive-title">{{ post.title | escape }}<small>{{ post.description | default: post.excerpt | strip_html | truncate: 160 | escape }}</small></span><span class="archive-arrow" aria-hidden="true">↗</span></a>{% endfor %}</div>
+  {% else %}
+  <div class="archive-empty"><div class="archive-empty-glyph" aria-hidden="true">✳</div><p class="eyebrow">NO PUBLIC WRITEUPS YET</p><h2>The archive starts here.</h2><p>Findings will appear once they are suitable for public disclosure. In the meantime, the template shows exactly how each case will be documented.</p><a class="button button-primary" href="{{ '/template/' | relative_url }}">Read the template <span aria-hidden="true">↗</span></a></div>
+  {% endif %}
+</section>
