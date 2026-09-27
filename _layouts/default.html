@@ -1,10 +1,18 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="color-scheme" content="light dark">
-    <meta name="theme-color" content="#f7f5ef">
+    <meta name="color-scheme" content="dark light">
+    <meta name="theme-color" content="#18191b">
+    <script>
+      try {
+        const savedTheme = localStorage.getItem('oxship-theme');
+        if (savedTheme === 'light' || savedTheme === 'dark') {
+          document.documentElement.dataset.theme = savedTheme;
+        }
+      } catch (_) {}
+    </script>
     {% assign page_title = page.title | default: site.title %}
     {% assign page_description = page.description | default: site.description %}
     <title>{% if page.title %}{{ page_title | escape }} · {% endif %}{{ site.title | escape }}</title>
