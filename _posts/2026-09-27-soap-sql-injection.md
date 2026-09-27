@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "A €5,000 SQL injection in a SOAP integration"
-description: "An unauthenticated SQL injection, two program submissions, and a server that turned out to be unused."
+description: "An unauthenticated SQL injection in a SOAP integration, a €5,000 bounty, and a server that turned out to be unused."
 author: oxship
 date: 2026-09-27
 severity: "Exceptional (10.0)"
@@ -10,11 +10,11 @@ tags: [sql-injection, soap, disclosure, asset-lifecycle]
 published: true
 ---
 
-On May 19, 2026, I reported an unauthenticated SQL injection in an externally reachable SOAP integration. Four months later, the main-program report closed with an **Exceptional (10.0)** rating and a **€5,000 total bounty**, shared with a collaborator.
+On May 19, 2026, I reported an unauthenticated SQL injection in an externally reachable SOAP integration. Four months later, the case closed with an **Exceptional (10.0)** rating and a **€5,000 total bounty**, shared with a collaborator.
 
-The final remediation was to turn off the server. The company explained that it was no longer used.
+The final remediation was to turn off the server. The company explained that it was no longer used, even though my testing had linked it to the main website's production database.
 
-Between discovery and resolution, the report moved between programs, a request appeared to stop working, and another operation on the same server continued to expose the problem. The case became as much about tracking the affected service through that process as it was about the original injection.
+Between discovery and resolution, one request appeared to stop working while another operation on the same server continued to expose the problem. Following up on those operations kept the investigation moving until the company retired the service.
 
 ## At a glance
 
@@ -24,8 +24,7 @@ Between discovery and resolution, the report moved between programs, a request a
 | --- | --- |
 | Vulnerability | Unauthenticated SQL injection in SOAP integration services |
 | Database technology | Microsoft SQL Server |
-| First report | May 19, 2026 |
-| Main-program submission | June 3, 2026, as a collaborative submission |
+| Reported | May 19, 2026 |
 | Final program rating | Exceptional, 10.0 |
 | Total bounty | €5,000 across both collaborators |
 | Resolution | September 24, 2026; server switched off, according to the company |
@@ -54,6 +53,17 @@ I followed that with **ffuf** and the **`iis.txt` wordlist**, looking for paths 
   <figcaption>ffuf path-discovery screenshot, anonymized for publication. The IP is redacted and the organization-specific URL prefix is replaced with COMPANY. Several candidates returned redirects; these results guided further service review. Select the image to view it at full size.</figcaption>
 </figure>
 
+When I visited those directory hits in the browser, they returned **403 Forbidden**. I ran **shortscan again inside one of the discovered directories**, which revealed short-name hints for a service file.
+
+<figure class="article-figure">
+  <a href="{{ '/assets/images/writeups/soap-sql-injection/shortscan-service-anonymized.png' | relative_url }}" target="_blank" rel="noopener noreferrer" aria-label="Open the anonymized service-directory shortscan screenshot at full size">
+    <img src="{{ '/assets/images/writeups/soap-sql-injection/shortscan-service-anonymized.png' | relative_url }}" width="1738" height="905" loading="lazy" decoding="async" alt="Anonymized shortscan output inside a discovered directory, showing a service-file short-name hint and a service references directory.">
+  </a>
+  <figcaption>The second shortscan run, inside a discovered directory. The IP is redacted and company-specific prefixes are replaced; WSCOMPANY entries are substituted labels. The output provided filename hints for the next stage of investigation. Select the image to view it at full size.</figcaption>
+</figure>
+
+The ASMX service name followed the same naming pattern as its parent directory. Opening that service brought up an operations index, which led me to the documentation for the email-change operation.
+
 The discovery sequence was:
 
 <div class="table-scroll" markdown="1" role="region" aria-label="Reconnaissance overview" tabindex="0">
@@ -63,6 +73,8 @@ The discovery sequence was:
 | Public indexing | Shodan | Find an IP associated with the company's hostnames |
 | IIS enumeration | shortscan | Look for short-name hints on the exposed IIS surface |
 | Path discovery | ffuf with `iis.txt` | Identify service paths using a prefix relevant to the target |
+| Directory follow-up | shortscan | Find service-file hints inside directories that returned 403 when visited |
+| ASMX documentation | Browser | Review the matching service's operation index and request/response schema |
 | Service review | SOAP request and response inspection | Understand the exposed operations and their behavior |
 
 </div>
@@ -71,9 +83,25 @@ The company domain, IP address, and service-path prefix are redacted in this wri
 
 ## An integration service with database access
 
+The ASMX service page listed the supported operations, including the email-change functionality I investigated.
+
+<figure class="article-figure">
+  <a href="{{ '/assets/images/writeups/soap-sql-injection/soap-operations-anonymized.png' | relative_url }}" target="_blank" rel="noopener noreferrer" aria-label="Open the anonymized SOAP operations index at full size">
+    <img src="{{ '/assets/images/writeups/soap-sql-injection/soap-operations-anonymized.png' | relative_url }}" width="1582" height="994" loading="lazy" decoding="async" alt="ASMX service documentation listing its supported operations, with the company-specific service name replaced.">
+  </a>
+  <figcaption>The service's operations index, with the company-specific service name anonymized. Select the image to view it at full size.</figcaption>
+</figure>
+
 The first finding involved an email-change operation exposed through a SOAP service. It accepted requests without credentials or a logged-in browser session.
 
 SOAP was the transport layer: an XML envelope carried the operation and its input. The security issue appeared further down the request path, where that input influenced a database query.
+
+<figure class="article-figure">
+  <a href="{{ '/assets/images/writeups/soap-sql-injection/soap-operation-anonymized-v2.png' | relative_url }}" target="_blank" rel="noopener noreferrer" aria-label="Open the anonymized SOAP operation documentation at full size">
+    <img src="{{ '/assets/images/writeups/soap-sql-injection/soap-operation-anonymized-v2.png' | relative_url }}" width="1214" height="1295" loading="lazy" decoding="async" alt="ASMX documentation for the email-change operation, showing example SOAP request and response schemas with the IP and company-specific service identifiers anonymized.">
+  </a>
+  <figcaption>The operation's generated SOAP documentation. These request and response examples contain placeholder values and describe the service contract. The IP and company-specific service identifiers are anonymized. Select the image to view it at full size.</figcaption>
+</figure>
 
 Unexpected input produced Microsoft SQL Server parsing errors in the response, including an unclosed quotation-mark error. That was a useful signal, but a parsing error alone did not establish the extent of the issue.
 
@@ -98,27 +126,21 @@ The important distinction was between influencing a query and proving every poss
 
 I reported limiting data collection to database metadata, a record count, and verification involving my own test account. I did not dump customer records.
 
-The original report discussed broader risks to customer information and possible data modification. Those were impact scenarios. The evidence I am presenting here supports unauthenticated query manipulation and database metadata disclosure; it does not demonstrate arbitrary modification, deletion, or access to every category of payment data.
+My test-account check linked the integration to the main website's production data. The count I reported was **12,904,334 rows—roughly 13 million records**. That row count did not establish how many distinct users were represented.
 
-## Moving the report to the right program
+The report discussed broader risks to customer information and possible data modification. Those were impact scenarios. The evidence I am presenting here supports unauthenticated query manipulation and database metadata disclosure; it does not demonstrate arbitrary modification, deletion, or access to every category of payment data.
 
-Intigriti reproduced the original finding on May 19 and passed it to the company. The following day, the company explained that the integration did not belong to the website covered by that particular program and should be handled through the general program instead.
+## Triage and follow-up evidence
 
-That created a routing question. The service lived on a separate subdomain, but my test-account check was the basis for arguing that the issue affected data associated with the main website.
+Intigriti reproduced the finding on May 19 and passed it to the company. My test-account check also linked the exposed integration to data associated with the main website.
 
-On June 3, triage instructed us to resubmit. The first report was closed as **Informative** as part of that move, and later archived. That status belonged to the original submission; the main-program report continued through review.
-
-I had reached the submission limit at the time. A collaborator created the main-program submission and added me as a collaborator.
-
-## A second operation kept the investigation open
-
-The follow-up evidence concerned a product-related operation on another SOAP service on the same server. This was a different operation from the email-change operation in the original report.
+The follow-up evidence concerned a product-related operation on another SOAP service on the same server. This was a different operation from the initial email-change finding.
 
 That distinction matters. A request being rejected, or one route no longer behaving as before, does not show that every affected operation on the server has been addressed. It also does not establish why the original request stopped working.
 
-During the June review, triage asked for evidence beyond a syntax error. I supplied further database metadata evidence for the product operation. On June 4, triage confirmed reproduction and passed the main report to the company. The program record listed the severity as **Exceptional (10.0)**.
+During the June review, triage asked for evidence beyond a syntax error. I supplied further database metadata evidence for the product operation. On June 4, triage confirmed reproduction and passed the evidence to the company. The program record listed the severity as **Exceptional (10.0)**.
 
-That was the program's recorded rating. My original submission had proposed a separate CVSS 3.1 assessment of 9.1.
+That was the program's recorded rating. My initial assessment was CVSS 3.1 9.1.
 
 ## The September retest
 
@@ -130,7 +152,7 @@ The September 24 notes also recorded that both the baseline and error responses 
 
 The company then asked for a complete SOAP request to help reproduce the behavior. I supplied the request context alongside the baseline and observed response differences. No credentials or cookies were needed for those recorded tests.
 
-After I also clarified the connection to the earlier submission, the company accepted the main report on September 24 and awarded the €5,000 total bounty.
+The company accepted the report on September 24 and awarded the €5,000 total bounty.
 
 ## Resolution: the server was retired
 
@@ -138,7 +160,7 @@ Later that day, the company explained that the server was no longer used and had
 
 That is the documented remediation for this case. I do not have a source-code patch to describe, and the report history does not establish that all of the affected query implementations were rewritten.
 
-The outcome highlighted a service-lifecycle problem: a server could be unnecessary to the business and still remain reachable with a database connection. Retirement removed the reported service from exposure.
+The outcome highlighted a service-lifecycle problem: a server could be unnecessary to the business and still remain reachable with a connection to production data. My test-account check and the reported count of roughly 13 million records made that access significant. Retirement removed the reported service from exposure.
 
 ## Timeline
 
@@ -146,11 +168,10 @@ The outcome highlighted a service-lifecycle problem: a server could be unnecessa
 
 | Date | Event |
 | --- | --- |
-| May 19, 2026 | Original report submitted; triage reproduced it the same day. |
-| May 20 | The company identified the program-routing issue; I explained the link to my main-site test account. |
-| June 3 | Triage requested resubmission. A collaborator opened the collaborative main-program report, and I supplied further evidence. |
+| May 19, 2026 | Finding reported; triage reproduced it the same day. |
+| May 20 | I explained the link to my main-site test account. |
+| June 3 | Further database metadata evidence supplied for the product operation. |
 | June 4 | Triage confirmed reproduction; the program record listed Exceptional, 10.0. |
-| June 18 | The original Informative report was archived; the main report remained under review. |
 | September 22 | Product-operation retest evidence showed the issue was still observable. |
 | September 24 | Further reproduction details supplied; report accepted and €5,000 total bounty awarded. |
 | September 24 | The company reported switching off the unused server and marked the report Resolved. |
@@ -163,10 +184,8 @@ The outcome highlighted a service-lifecycle problem: a server could be unnecessa
 
 **Track operations individually during retesting.** In this case, the original email-change finding and the later product-service evidence belonged to the same investigation, but they were different request paths. Keeping that distinction visible made the remediation discussion more precise.
 
-**Keep the submission history attached to the finding.** Moving a report between programs can leave earlier reproduction work in another thread. Linking the two submissions helped restore that context after several months.
-
 For an integration that needs to remain in service, the database defense is to bind user values through parameterized queries and restrict the application's database permissions. Those are established recommendations in the [OWASP SQL Injection Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html). Detailed database exceptions should also stay out of public responses, although hiding them alone would not fix unsafe query construction.
 
 For this server, the company chose retirement. Keeping an accurate inventory of exposed integrations—and removing them when they are no longer needed—was the operational lesson behind the final resolution.
 
-Thanks to my collaborator for helping on the main-program submission, and to the triage team and the company for working through the report and resolving the exposure.
+Thanks to my collaborator for helping with the case, and to the triage team and the company for working through the report and resolving the exposure.
